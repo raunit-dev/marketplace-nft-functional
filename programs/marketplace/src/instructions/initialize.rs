@@ -1,9 +1,14 @@
 use anchor_lang::prelude::*;
+use anchor_spl::token_interface::{Mint,TokenInterface};
+
+
+use crate::state::marketplace::Marketplace;
 
 #[derive(Accounts)]
-pub struct Initialize {}
-
-pub fn handler(ctx: Context<Initialize>) -> Result<()> {
-    msg!("Greetings from: {:?}", ctx.program_id);
-    Ok(())
+#[instruction(seeds: u64)]
+pub struct Initialize<`info>{
+    #[account(mut)]
+    
 }
+
+
