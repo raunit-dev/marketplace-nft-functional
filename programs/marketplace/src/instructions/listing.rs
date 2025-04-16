@@ -49,7 +49,7 @@ pub struct List <'info> {
         seeds::program = metadata_program.key(),
         bump,
         constraint = metadata.collection.as_ref().unwrap().key().as_ref() == collection_mint.key().as_ref(),
-        constraint = 
+        constraint = metadata.collection.as_ref().unwrap().key().as_ref().verified
     )]
     pub metadata: Account<'info,MetadataAccount>,
     #[account(
@@ -57,8 +57,9 @@ pub struct List <'info> {
         metadata_program.key().as_ref(),
         maker_mint.key().as_ref(),
         b"edition"
-        
-        ]
+        ],
+        seeds::program = metadata_program.key(),
+        bump,
     )]
     pub master_edition: Account<'info,MasterEditionAccount>,
     pub system_program: Program<'info,System>,
@@ -66,4 +67,16 @@ pub struct List <'info> {
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub metadata_program: Program<'info,Metadata>
 
+}
+
+impl <'info> List <'info> {
+    pub fn Create_Listing(&mut self,price: u64,bumps: &ListBumps) -> Result <()> {
+        self.listing.set_inner(Listing{
+        maker: self.maker.key(),
+        maker_mint: self.maker_mint.key(),
+        price,
+        bump: bump.listing
+        });
+        Ok(())
+    }
 }
