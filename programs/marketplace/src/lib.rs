@@ -16,7 +16,7 @@ declare_id!("8SrTZb8ud7d8L7JmNrTUkf1dn17hXY1mQrpfncB4Ey3V");
 pub mod marketplace {
     use super::*;
 
-    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        initialize::handler(ctx)
+    pub fn initialize(ctx: Context<Initialize>, fee: u16, name: String, bumps: &InitializeBumps) -> Result<()> {
+        ctx.accounts.init(name, fee, &ctx.bumps)
     }
 }
