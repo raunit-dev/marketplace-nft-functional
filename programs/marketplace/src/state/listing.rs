@@ -1,8 +1,8 @@
 use anchor_lang::prelude::*;
 
 pub struct Listing {
-    pub maker: Publickey,
-    pub maker_mint: Publickey,
+    pub maker: Pubkey,
+    pub maker_mint: Pubkey,
     pub bump: u8,
     pub price: u64
 }
