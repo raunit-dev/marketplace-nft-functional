@@ -17,9 +17,23 @@ pub struct Initialize<'info> {
         space = Marketplace::INIT_SPACE
     )]
     pub marketplace: Account<'info, Marketplace>,
+    #[account(
+        seeds = [b"treasury",marketplace.key().as_ref()],
+        bump
+    )]
+    pub treasury: SystemAccount<'info>,
+    #[account(
+        init,
+        payer = admin,
+        seeds = [b"rewards", marketplace.key().as_ref()],
+        bump,
+        mint::decimals = 6,
+        mint::authority = marketplace
+    )]
+    pub reward_mint: InterfaceAccount<'info,Mint>,
+    pub system_program: Program<'info,System>,
+    pub token_programm: Interface<'info,TokenInterface>
 
-
-    
 }
 
 
