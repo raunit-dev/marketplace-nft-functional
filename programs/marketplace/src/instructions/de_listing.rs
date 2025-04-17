@@ -52,10 +52,10 @@ impl <'info> DEList <'info> {
         ];
         let signer_seeds = &[&seeds[..]];
         let cpi_accounts = TransferChecked{
-            form: self.maker_ata.to_account_info(),
+            form: self.vault.to_account_info(),
             mint: self.maker_mint.to_account_info(),
-            to: self.vault.to_account_info(),
-            authority: self.maker.to_account_info()
+            to: self.maker_ata.to_account_info(),
+            authority: self.listing.to_account_info()
         };
         let cpi_ctx = CpiContext::new(cpi_program,cpi_accounts);
 
