@@ -6,6 +6,7 @@ use anchor_spl::{
     token::{close_account, Token},
 };
 
+use crate::marketplace;
 use crate::state::{Listing, Marketplace};
 
 #[derive(Accounts)]
@@ -80,24 +81,55 @@ pub struct Purchase<'info> {
     pub associated_token_program: Program<'info, AssociatedToken>
 }
 
-impl<'info> List<'info> {
-    pub fn withdraw_nft(&mut self) -> Result <()> {
-        let cpi_program = self.token_program.to_account_info();
-        let seeds = &[
-            self.marketplace.key().as_ref(),
-            self.maker_mint.key().as_ref(),
-            &[self.listing.bump],
-        ];
-        let signer_seeds = &[&seeds[..]];
-        let cpi_accounts = Transfer{
-            from: self.vault.to_account_info(),
-            mint: self.maker_mint.to_account_info(),
-            to: self.maker_ata.to_account_info(),
-            authority: self.listing.to_account_info()
-        };
-        let cpi_ctx = CpiContext::new(cpi_program,cpi_accounts);
+impl<'info> Purchase<'info> {
+  
 
-        transfer(cpi_ctx,1,self.maker_mint.decimals)
+   pub fn send_sol(&mut self) -> Result <()> {
+    let marketplace_fee: u64 =(self.marketplace.fee as u64)
+    .checked_mul(self.listing.price)
+    .unwrap()
+    .checked_div(10000_u64)
+    .unwrap();
+    let cpi_program = self.system_program.to_account_info();
+    let cpi_accounts = Transfer {
+        from: self.taker.to_account_info(),
+        to: self.maker.to_account_info()
+    };
+    let cpi_context = CpiContext::new(cpi_program, cpi_accounts);
+
+    let amount = self.listing.price.checked_sub(marketplace_fee).unwrap();
+    transfer(cpi_context, lamports: amount)?;
+    let cpi_program = self.system_program.to_account_info();
+    let cpi_accounts = Transfer {
+        from: self.taker.to_account_info(),
+        to: self.treasury.to_account_info()
+    };
+    transfer(cpi_context, lamports: marketplace_fee)
+   }
+
+
+
+
+
+
+
+    // pub fn withdraw_nft(&mut self) -> Result <()> {
+    //     let cpi_program = self.token_program.to_account_info();
+    //     let seeds = &[
+    //         self.marketplace.key().as_ref(),
+    //         self.maker_mint.key().as_ref(),
+    //         &[self.listing.bump],
+    //     ];
+    //     let signer_seeds = &[&seeds[..]];
+    //     let cpi_accounts = Transfer{
+    //         from: self.vault.to_account_info(),
+    //         mint: self.maker_mint.to_account_info(),
+    //         to: self.maker_ata.to_account_info(),
+    //         authority: self.listing.to_account_info()
+    //     };
+    //     let cpi_ctx = CpiContext::new(cpi_program,cpi_accounts);
+
+    //     transfer(cpi_ctx,1,self.maker_mint.decimals)
         
-    }
+    // }
 }
