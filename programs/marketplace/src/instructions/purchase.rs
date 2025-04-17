@@ -3,7 +3,6 @@ use anchor_lang::system_program::{transfer, Transfer};
 
 use anchor_spl::{
     associated_token::AssociatedToken,
-    metadata::{MasterEditionAccount, Metadata, MetadataAccount},
     token::{close_account, Token},
 };
 
@@ -57,38 +56,28 @@ pub struct Purchase<'info> {
     )]
     pub listing: Account<'info, Listing>,
 
-    #[account()]
+    #[account(
+        seeds = [b"treasury", marketplace.key().as_ref()],
+        bump = marketplace.treasury_bump
+    )]
+    pub treasury: SystemAccount<'info>,
+
+
     pub collection_mint: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
-        seeds = [
-            b"metadata",
-            metadata_program.key().as_ref(),
-            maker_mint.key().as_ref()
-        ],
-        seeds::program = metadata_program.key(),
-        bump,
-        constraint = metadata.collection.as_ref().unwrap().key.as_ref() == collection_mint.key().as_ref(),
-        constraint = metadata.collection.as_ref().unwrap().verified == true
+        mut,
+        seeds = [b"rewards", marketplace.key().as_ref()],
+        bump = marketplace.rewards_bump,
+        mint::decimals = 6,
+        mint::authority = marketplace
     )]
-    pub metadata: Account<'info, MetadataAccount>,
+    pub reward_mint: InterfaceAccount<'info, Mint>,
 
-    #[account(
-        seeds = [
-            b"metadata",
-            metadata_program.key().as_ref(),
-            maker_mint.key().as_ref(),
-            b"edition"
-        ],
-        seeds::program = metadata_program.key(),
-        bump,
-    )]
-    pub master_edition: Account<'info, MasterEditionAccount>,
 
     pub system_program: Program<'info, System>,
     pub token_program: Interface<'info, TokenInterface>,
-    pub associated_token_program: Program<'info, AssociatedToken>,
-    pub metadata_program: Program<'info, Metadata>
+    pub associated_token_program: Program<'info, AssociatedToken>
 }
 
 impl<'info> List<'info> {
