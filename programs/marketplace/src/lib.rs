@@ -19,4 +19,8 @@ pub mod marketplace {
     pub fn initialize(ctx: Context<Initialize>, fee: u16, name: String) -> Result<()> {
         ctx.accounts.init(name, fee, &ctx.bumps)
     }
+
+    pub fn list(ctx: Context<Listing>, price: u16 ) -> Result<()> {
+        ctx.accounts.create_listing(price, &ctx.bumps)
+    }
 }
