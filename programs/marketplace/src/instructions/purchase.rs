@@ -1,17 +1,22 @@
 use anchor_lang::prelude::*;
+use anchor_lang::system_program::{transfer, Transfer};
+
 use anchor_spl::{
     associated_token::AssociatedToken,
     metadata::{MasterEditionAccount, Metadata, MetadataAccount},
-    token::{transfer_checked, TransferChecked},
-    token_interface::{Mint, TokenAccount, TokenInterface},
+    token::{close_account, Token},
 };
+
 use crate::state::{Listing, Marketplace};
 
 #[derive(Accounts)]
 #[instruction(name: String)]
 pub struct Purchase<'info> {
     #[account(mut)]
-    pub maker: Signer<'info>,
+    pub taker: Signer<'info>,
+
+    #[account(mut)]
+    pub maker: SystemAccount<'info>,
 
     #[account(
         seeds = [b"marketplace", name.as_str().as_bytes()],
@@ -19,30 +24,36 @@ pub struct Purchase<'info> {
     )]
     pub marketplace: Account<'info, Marketplace>,
 
-    #[account()]
     pub maker_mint: InterfaceAccount<'info, Mint>,
 
     #[account(
-        mut,
+        init_if_needed,
+        payer = taker,
         associated_token::mint = maker_mint,
-        associated_token::authority = maker
+        associated_token::authority = taker
     )]
-    pub maker_ata: InterfaceAccount<'info, TokenAccount>,
+    pub taker_ata: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
-        init,
-        payer = maker,
+        init_if_needed,
+        payer = taker,
+        associated_token::mint = rewards_mint,
+        associated_token::authority = taker
+    )]
+    pub taker_rewards_ata: InterfaceAccount<'info,TokenAccount>,
+
+    #[account(
+        mut,
         associated_token::mint = maker_mint,
         associated_token::authority = listing
     )]
     pub vault: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
-        init,
-        payer = maker,
+        mut,
         seeds = [marketplace.key().as_ref(), maker_mint.key().as_ref()],
-        bump,
-        space = Listing::INIT_SPACE
+        bump = listing.bump,
+        close = maker
     )]
     pub listing: Account<'info, Listing>,
 
@@ -89,7 +100,7 @@ impl<'info> List<'info> {
             &[self.listing.bump],
         ];
         let signer_seeds = &[&seeds[..]];
-        let cpi_accounts = TransferChecked{
+        let cpi_accounts = Transfer{
             from: self.vault.to_account_info(),
             mint: self.maker_mint.to_account_info(),
             to: self.maker_ata.to_account_info(),
@@ -97,7 +108,7 @@ impl<'info> List<'info> {
         };
         let cpi_ctx = CpiContext::new(cpi_program,cpi_accounts);
 
-        transfer_checked(cpi_ctx,1,self.maker_mint.decimals)
+        transfer(cpi_ctx,1,self.maker_mint.decimals)
         
     }
 }
