@@ -7,6 +7,7 @@ use anchor_spl::{
 };
 use crate::state::{Listing, Marketplace};
 
+
 #[derive(Accounts)]
 #[instruction(name: String)]
 pub struct List<'info> {
