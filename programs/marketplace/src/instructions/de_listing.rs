@@ -46,13 +46,13 @@ impl <'info> DEList <'info> {
     pub fn withdraw_nft(&mut self) -> Result <()> {
         let cpi_program = self.token_program.to_account_info();
         let seeds = &[
-            marketplace.key().as_ref(),
-            maker_mint.key().as_ref(),
+            self.marketplace.key().as_ref(),
+            self.maker_mint.key().as_ref(),
             &[self.listing.bump],
         ];
         let signer_seeds = &[&seeds[..]];
         let cpi_accounts = TransferChecked{
-            form: self.vault.to_account_info(),
+            from: self.vault.to_account_info(),
             mint: self.maker_mint.to_account_info(),
             to: self.maker_ata.to_account_info(),
             authority: self.listing.to_account_info()

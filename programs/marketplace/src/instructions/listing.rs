@@ -57,8 +57,8 @@ pub struct List<'info> {
         ],
         seeds::program = metadata_program.key(),
         bump,
-        constraint = metadata.collection.as_ref().unwrap().key().as_ref() == collection_mint.key().as_ref(),
-        constraint = metadata.collection.as_ref().unwrap().key().as_ref().verified
+        constraint = metadata.collection.as_ref().unwrap().key.as_ref() == collection_mint.key().as_ref(),
+        constraint = metadata.collection.as_ref().unwrap().verified == true
     )]
     pub metadata: Account<'info, MetadataAccount>,
 
