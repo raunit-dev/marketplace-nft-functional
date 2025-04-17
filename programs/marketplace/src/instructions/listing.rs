@@ -2,8 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken,
     metadata::{MasterEditionAccount, Metadata, MetadataAccount},
-    token::{transfer_checked, TransferChecked},
-    token_interface::{Mint, TokenAccount, TokenInterface},
+    token_interface::{Mint, TokenAccount, TokenInterface,transfer_checked, TransferChecked},
 };
 use crate::state::{Listing, Marketplace};
 
@@ -19,7 +18,6 @@ pub struct List<'info> {
     )]
     pub marketplace: Account<'info, Marketplace>,
 
-    #[account()]
     pub maker_mint: InterfaceAccount<'info, Mint>,
 
     #[account(
@@ -46,7 +44,7 @@ pub struct List<'info> {
     )]
     pub listing: Account<'info, Listing>,
 
-    #[account()]
+
     pub collection_mint: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
