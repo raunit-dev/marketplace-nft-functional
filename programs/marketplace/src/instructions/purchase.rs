@@ -4,10 +4,9 @@ use anchor_lang::system_program::{transfer, Transfer};
 use anchor_spl::token::CloseAccount;
 use anchor_spl::{
     associated_token::AssociatedToken,
-    token::{close_account, Token},
+    token::close_account,
 };
 
-use crate::marketplace;
 use crate::state::{Listing, Marketplace};
 
 #[derive(Accounts)]
@@ -38,7 +37,7 @@ pub struct Purchase<'info> {
     #[account(
         init_if_needed,
         payer = taker,
-        associated_token::mint = rewards_mint,
+        associated_token::mint = reward_mint,
         associated_token::authority = taker
     )]
     pub taker_rewards_ata: InterfaceAccount<'info, TokenAccount>,
@@ -96,7 +95,8 @@ impl<'info> Purchase<'info> {
         let cpi_context = CpiContext::new(cpi_program.clone(), cpi_accounts);
 
         let amount = self.listing.price.checked_sub(marketplace_fee).unwrap();
-        transfer(cpi_context, lamports: amount)?;
+
+        transfer(cpi_context,amount)?;
 
         let cpi_accounts = Transfer {
             from: self.taker.to_account_info(),
@@ -104,7 +104,8 @@ impl<'info> Purchase<'info> {
         };
         let cpi_context = CpiContext::new(cpi_program, cpi_accounts);
 
-        transfer(cpi_context, lamports: marketplace_fee)
+        transfer(cpi_context, marketplace_fee)?;
+        Ok(())
     }
 
     pub fn send_nft(&mut self) -> Result<()> {
