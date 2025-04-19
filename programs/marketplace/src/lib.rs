@@ -20,7 +20,9 @@ pub mod marketplace {
         ctx.accounts.init(name, fee, &ctx.bumps)
     }
 
-    pub fn list(ctx: Context<Listing>, price: u16 ) -> Result<()> {
-        ctx.accounts.create_listing(price, &ctx.bumps)
+    pub fn list(ctx: Context<List>, price: u64 ) -> Result<()> {
+        ctx.accounts.create_listing(price, &ctx.bumps)?;
+        ctx.accounts.deposit_nft()?;
+        Ok(())
     }
 }

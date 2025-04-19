@@ -1,11 +1,10 @@
 use anchor_lang::prelude::*;
 use anchor_lang::system_program::{transfer, Transfer};
 
-use anchor_spl::token::CloseAccount;
-use anchor_spl::{
-    associated_token::AssociatedToken,
-    token::close_account,
-};
+use anchor_spl::token::{close_account, transfer_checked, CloseAccount, TransferChecked};
+use anchor_spl::associated_token::AssociatedToken;
+
+use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
 
 use crate::state::{Listing, Marketplace};
 
@@ -111,9 +110,9 @@ impl<'info> Purchase<'info> {
     pub fn send_nft(&mut self) -> Result<()> {
         let cpi_program = self.token_program.to_account_info();
         let seeds = &[
-            self.marketplace.key().as_ref(),
-            self.maker_mint.key().as_ref(),
-            &[self.listing.bump],
+            &self.marketplace.key().to_bytes()[..],
+            &self.maker_mint.key().to_bytes()[..],
+            &[self.listing.bump]
         ];
         let signer_seeds = &[&seeds[..]];
         let cpi_accounts = TransferChecked {
@@ -122,7 +121,7 @@ impl<'info> Purchase<'info> {
             to: self.taker_ata.to_account_info(),
             authority: self.listing.to_account_info(),
         };
-        let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
+        let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts,signer_seeds);
 
         transfer_checked(cpi_ctx, 1, self.maker_mint.decimals)
     }
@@ -142,7 +141,7 @@ impl<'info> Purchase<'info> {
             authority: self.listing.to_account_info()
         };
 
-        let cpi_context = CpiContext::new(cpi_programs,cpi_accounts, signer_seeds);
+        let cpi_context = CpiContext::new_with_signer(cpi_programs,cpi_accounts, signer_seeds);
         close_account(cpi_context)
 
     }
