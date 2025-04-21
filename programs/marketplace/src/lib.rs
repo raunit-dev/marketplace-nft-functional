@@ -17,7 +17,8 @@ pub mod marketplace {
     use super::*;
 
     pub fn initialize(ctx: Context<Initialize>, fee: u16, name: String) -> Result<()> {
-        ctx.accounts.init(name, fee, &ctx.bumps)
+        ctx.accounts.init(fee,name, &ctx.bumps)?;
+        Ok(())
     }
 
     pub fn list(ctx: Context<List>, price: u64 ) -> Result<()> {

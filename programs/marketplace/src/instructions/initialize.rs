@@ -39,7 +39,7 @@ pub struct Initialize<'info> {
 }
 
 impl<'info> Initialize<'info> {
-    pub fn init(&mut self, name: String, fee: u16, bumps: &InitializeBumps) -> Result<()> {
+    pub fn init(&mut self, fee: u16, name: String,bumps: &InitializeBumps) -> Result<()> {
         self.marketplace.set_inner(Marketplace {
             admin: self.admin.key(),
             fee,
