@@ -30,7 +30,8 @@ pub struct Initialize<'info> {
         seeds = [b"rewards", marketplace.key().as_ref()],
         bump,
         mint::decimals = 6,
-        mint::authority = marketplace
+        mint::authority = marketplace,
+        mint::token_program = token_program
     )]
     pub reward_mint: InterfaceAccount<'info, Mint>,
     pub token_program: Interface<'info, TokenInterface>,
