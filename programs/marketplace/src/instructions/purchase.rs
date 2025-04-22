@@ -126,7 +126,8 @@ impl<'info> Purchase<'info> {
         };
         let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts,signer_seeds);
 
-        transfer_checked(cpi_ctx, 1, self.maker_mint.decimals)
+        transfer_checked(cpi_ctx,self.vault.amount, self.maker_mint.decimals)?;
+        Ok(())
     }
 
     pub fn close_mint_vault(&mut self) -> Result<()> {

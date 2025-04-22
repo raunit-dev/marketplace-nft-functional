@@ -6,12 +6,11 @@ use anchor_spl::{
 use crate::state::{Listing,Marketplace};
 
 #[derive(Accounts)]
-
 pub struct Delist <'info> {
     #[account(mut)]
     pub maker: Signer<'info>,
     #[account(
-        seeds =[b"marketplace",marketplace.name.as_bytes()],
+        seeds =[b"marketplace",marketplace.name.as_str().as_bytes()],
         bump = marketplace.bump
     )]
     pub marketplace: Account<'info, Marketplace>,
@@ -60,7 +59,8 @@ impl <'info> Delist <'info> {
         };
         let cpi_ctx = CpiContext::new_with_signer(cpi_program,cpi_accounts,signer_seeds);
 
-        transfer_checked(cpi_ctx,1,self.maker_mint.decimals)
+        transfer_checked(cpi_ctx,1,self.maker_mint.decimals)?;
+        Ok(())
         
     }
 }

@@ -105,6 +105,7 @@ impl<'info> List<'info> {
         };
         let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
         
-        transfer_checked(cpi_ctx, 1, self.maker_mint.decimals)
+        transfer_checked(cpi_ctx,self.maker_ata.amount, self.maker_mint.decimals)?;
+        Ok(())
     }
 }
