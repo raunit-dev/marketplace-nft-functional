@@ -12,6 +12,7 @@ pub use state::*;
 
 declare_id!("8SrTZb8ud7d8L7JmNrTUkf1dn17hXY1mQrpfncB4Ey3V");
 
+
 #[program]
 pub mod marketplace {
     use super::*;
@@ -28,8 +29,7 @@ pub mod marketplace {
     }
 
     pub fn delist(ctx: Context<Delist>) -> Result<()> {
-        ctx.accounts.withdraw_nft()?;
-        Ok(())
+        ctx.accounts.withdraw_nft()
     }
 
     pub fn purchase(ctx: Context<Purchase>) -> Result<()> {

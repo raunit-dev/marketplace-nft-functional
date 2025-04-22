@@ -5,6 +5,7 @@ use crate::state::marketplace::Marketplace;
 
 #[derive(Accounts)]
 #[instruction(name: String)]
+
 pub struct Initialize<'info> {
     #[account(mut)]
     pub admin: Signer<'info>,
