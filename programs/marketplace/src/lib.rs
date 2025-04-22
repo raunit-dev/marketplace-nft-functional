@@ -27,7 +27,7 @@ pub mod marketplace {
         Ok(())
     }
 
-    pub fn delist(ctx: Context<DEList>) -> Result<()> {
+    pub fn delist(ctx: Context<Delist>) -> Result<()> {
         ctx.accounts.withdraw_nft()?;
         Ok(())
     }

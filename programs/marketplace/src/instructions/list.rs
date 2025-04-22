@@ -17,7 +17,10 @@ pub struct List<'info> {
         bump = marketplace.bump
     )]
     pub marketplace: Account<'info, Marketplace>,
-
+   
+    #[account(
+        mint::token_program = token_program
+    )]
     pub maker_mint: InterfaceAccount<'info, Mint>,
 
     #[account(

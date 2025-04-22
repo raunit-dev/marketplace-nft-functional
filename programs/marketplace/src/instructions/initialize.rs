@@ -34,8 +34,10 @@ pub struct Initialize<'info> {
         mint::token_program = token_program
     )]
     pub reward_mint: InterfaceAccount<'info, Mint>,
+
+    
     pub token_program: Interface<'info, TokenInterface>,
-    pub system_program: Program<'info, System>,
+    pub system_program: Program<'info, System>
 }
 
 impl<'info> Initialize<'info> {

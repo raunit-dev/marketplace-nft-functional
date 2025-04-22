@@ -17,36 +17,43 @@ describe("marketplace", () => {
   const program = anchor.workspace.marketplace as Program<Marketplace>;
   const admin = provider.wallet;
   const name = "RAUNIT";
-  let fee = new BN(100); 
+
+
 
   
-  const [marketplace, marketplaceBump] = PublicKey.findProgramAddressSync(
+  const marketplace = PublicKey.findProgramAddressSync(
     [Buffer.from("marketplace"), Buffer.from(name)],
     program.programId
-  );
+  )[0];
 
 
-  const [treasury, treasuryBump] = PublicKey.findProgramAddressSync(
+  const treasury = PublicKey.findProgramAddressSync(
     [Buffer.from("treasury"), marketplace.toBuffer()],
     program.programId
-  );
+  )[0];
 
 
-  const [rewardMint, rewardMintBump] = PublicKey.findProgramAddressSync(
+  const rewardMint = PublicKey.findProgramAddressSync(
     [Buffer.from("rewards"), marketplace.toBuffer()],
     program.programId
-  );
+  )[0];
+
+
+  console.log("Name:", name);
+  console.log("Marketplace PDA:", marketplace.toString());
+  console.log("Treasury PDA:", treasury.toString());
+  console.log("Reward Mint PDA:", rewardMint.toString());
 
   it("Marketplace Initialized", async () => {
     const tx = await program.methods.initialize(
-      fee,
+      1,
       name
     )
     .accountsPartial({
       admin: admin.publicKey,
-      marketplace:marketplace,
-      treasury:treasury,
-      rewardMint:rewardMint,
+      marketplace,
+      treasury,
+      rewardMint,
       tokenProgram: TOKEN_PROGRAM_ID,
       systemProgram: SystemProgram.programId
     })

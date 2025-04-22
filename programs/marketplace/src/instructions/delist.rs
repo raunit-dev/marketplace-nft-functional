@@ -7,8 +7,7 @@ use crate::state::{Listing,Marketplace};
 
 #[derive(Accounts)]
 
-
-pub struct DEList <'info> {
+pub struct Delist <'info> {
     #[account(mut)]
     pub maker: Signer<'info>,
     #[account(
@@ -21,13 +20,15 @@ pub struct DEList <'info> {
     #[account(
         mut,
         associated_token::mint = maker_mint,
-        associated_token::authority = maker
+        associated_token::authority = maker,
+        associated_token::token_program = token_program
     )]
     pub maker_ata: InterfaceAccount<'info,TokenAccount>,
     #[account(
         mut,
         associated_token::mint = maker_mint,
-        associated_token::authority = listing
+        associated_token::authority = listing,
+        associated_token::token_program = token_program
     )]
     pub vault: InterfaceAccount<'info, TokenAccount>,
     #[account(
@@ -42,7 +43,7 @@ pub struct DEList <'info> {
 
 }
 
-impl <'info> DEList <'info> {
+impl <'info> Delist <'info> {
     pub fn withdraw_nft(&mut self) -> Result <()> {
         let cpi_program = self.token_program.to_account_info();
         let seeds = &[

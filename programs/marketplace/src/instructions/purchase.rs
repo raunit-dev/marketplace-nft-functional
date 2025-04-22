@@ -29,7 +29,8 @@ pub struct Purchase<'info> {
         init_if_needed,
         payer = taker,
         associated_token::mint = maker_mint,
-        associated_token::authority = taker
+        associated_token::authority = taker,
+        associated_token::token_program = token_program
     )]
     pub taker_ata: InterfaceAccount<'info, TokenAccount>,
 
@@ -37,14 +38,16 @@ pub struct Purchase<'info> {
         init_if_needed,
         payer = taker,
         associated_token::mint = reward_mint,
-        associated_token::authority = taker
+        associated_token::authority = taker,
+        associated_token::token_program = token_program
     )]
     pub taker_rewards_ata: InterfaceAccount<'info, TokenAccount>,
 
     #[account(
         mut,
         associated_token::mint = maker_mint,
-        associated_token::authority = listing
+        associated_token::authority = listing,
+        associated_token::token_program = token_program
     )]
     pub vault: InterfaceAccount<'info, TokenAccount>,
 
