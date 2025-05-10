@@ -17,17 +17,12 @@ pub struct List<'info> {
         bump = marketplace.bump
     )]
     pub marketplace: Account<'info, Marketplace>,
-   
-    #[account(
-        mint::token_program = token_program
-    )]
     pub maker_mint: InterfaceAccount<'info, Mint>,
 
     #[account(
         mut,
         associated_token::mint = maker_mint,
-        associated_token::authority = maker,
-        associated_token::token_program = token_program
+        associated_token::authority = maker
     )]
     pub maker_ata: InterfaceAccount<'info, TokenAccount>,
 
@@ -36,7 +31,6 @@ pub struct List<'info> {
         payer = maker,
         associated_token::mint = maker_mint,
         associated_token::authority = listing,
-        associated_token::token_program = token_program
     )]
     pub vault: InterfaceAccount<'info, TokenAccount>,
 
@@ -50,7 +44,7 @@ pub struct List<'info> {
     pub listing: Account<'info, Listing>,
 
 
-    pub collection_mint: InterfaceAccount<'info, TokenAccount>,
+    pub collection_mint: InterfaceAccount<'info, Mint>,
 
     #[account(
         seeds = [
@@ -98,7 +92,7 @@ impl<'info> List<'info> {
     pub fn deposit_nft(&mut self) -> Result<()> {
         let cpi_program = self.token_program.to_account_info();
         let cpi_accounts = TransferChecked {
-            from: self.maker_ata.to_account_info(),
+            from: self.maker.to_account_info(),
             mint: self.maker_mint.to_account_info(),
             to: self.vault.to_account_info(),
             authority: self.maker.to_account_info()

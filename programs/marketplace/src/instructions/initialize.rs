@@ -32,7 +32,6 @@ pub struct Initialize<'info> {
         bump,
         mint::decimals = 6,
         mint::authority = marketplace,
-        mint::token_program = token_program
     )]
     pub reward_mint: InterfaceAccount<'info, Mint>,
 
