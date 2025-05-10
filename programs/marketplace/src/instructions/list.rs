@@ -17,14 +17,14 @@ pub struct List<'info> {
         bump = marketplace.bump
     )]
     pub marketplace: Account<'info, Marketplace>,
-    pub maker_mint: InterfaceAccount<'info, Mint>,
+    pub maker_mint: Box<InterfaceAccount<'info, Mint>>,
 
     #[account(
         mut,
         associated_token::mint = maker_mint,
         associated_token::authority = maker
     )]
-    pub maker_ata: InterfaceAccount<'info, TokenAccount>,
+    pub maker_ata: Box<InterfaceAccount<'info, TokenAccount>>,
 
     #[account(
         init,
@@ -32,7 +32,7 @@ pub struct List<'info> {
         associated_token::mint = maker_mint,
         associated_token::authority = listing,
     )]
-    pub vault: InterfaceAccount<'info, TokenAccount>,
+    pub vault: Box<InterfaceAccount<'info, TokenAccount>>,
 
     #[account(
         init,
@@ -44,7 +44,7 @@ pub struct List<'info> {
     pub listing: Account<'info, Listing>,
 
 
-    pub collection_mint: InterfaceAccount<'info, Mint>,
+    pub collection_mint: Box<InterfaceAccount<'info, Mint>>,
 
     #[account(
         seeds = [
@@ -57,7 +57,7 @@ pub struct List<'info> {
         constraint = metadata.collection.as_ref().unwrap().key.as_ref() == collection_mint.key().as_ref(),
         constraint = metadata.collection.as_ref().unwrap().verified == true
     )]
-    pub metadata: Account<'info, MetadataAccount>,
+    pub metadata: Box<Account<'info, MetadataAccount>>,
 
     #[account(
         seeds = [
@@ -69,7 +69,7 @@ pub struct List<'info> {
         seeds::program = metadata_program.key(),
         bump,
     )]
-    pub master_edition: Account<'info, MasterEditionAccount>,
+    pub master_edition: Box<Account<'info, MasterEditionAccount>>,
 
     pub system_program: Program<'info, System>,
     pub token_program: Interface<'info, TokenInterface>,

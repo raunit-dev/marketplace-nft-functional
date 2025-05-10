@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
-    token::{transfer_checked,TransferChecked},
+    associated_token::AssociatedToken,
+    token::{close_account, transfer_checked, CloseAccount, TransferChecked},
     token_interface::{Mint,TokenAccount,TokenInterface},
 };
 use crate::state::{Listing,Marketplace};
@@ -10,7 +11,7 @@ pub struct Delist <'info> {
     #[account(mut)]
     pub maker: Signer<'info>,
 
-    pub maker_mint: InterfaceAccount<'info,Mint>,
+    pub maker_mint: Box<InterfaceAccount<'info,Mint>>,
 
     #[account(
         seeds =[b"marketplace",marketplace.name.as_str().as_bytes()],
@@ -23,7 +24,7 @@ pub struct Delist <'info> {
         associated_token::mint = maker_mint,
         associated_token::authority = maker,
     )]
-    pub maker_ata: InterfaceAccount<'info,TokenAccount>,
+    pub maker_ata: Box<InterfaceAccount<'info,TokenAccount>>,
 
     #[account(
         mut,
@@ -50,8 +51,8 @@ impl <'info> Delist <'info> {
     pub fn withdraw_nft(&mut self) -> Result <()> {
         let cpi_program = self.token_program.to_account_info();
         let seeds = &[
-            self.marketplace.key().to_bytes(),
-            self.maker_mint.key().to_bytes(),
+            &self.marketplace.key().to_bytes()[..],
+            &self.maker_mint.key().to_bytes()[..],
             &[self.listing.bump],
         ];
         let signer_seeds = &[&seeds[..]];
@@ -69,10 +70,29 @@ impl <'info> Delist <'info> {
     }
 
     pub fn close_mint_vault(&mut self)->Result<()> {
+
         let seeds = &[
+            &self.marketplace.key().to_bytes()[..],
+            &self.maker_mint.key().to_bytes()[..],
+            &[self.listing.bump],
+        ];
+        let signer_seeds = &[&seeds[..]];
 
-        ]
-    }
+        let cpi_program = self.token_program.to_account_info();
 
+        let cpi_accounts = CloseAccount{
+            account: self.vault.to_account_info(),
+            destination: self.maker.to_account_info(),
+            authority: self.listing.to_account_info(),
+        };
 
+        let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer_seeds);
+        close_account(cpi_ctx)?;
+        Ok(())
+        
+         
+       }
 }
+
+
+ 

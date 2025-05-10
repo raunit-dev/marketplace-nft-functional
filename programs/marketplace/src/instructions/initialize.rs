@@ -33,9 +33,7 @@ pub struct Initialize<'info> {
         mint::decimals = 6,
         mint::authority = marketplace,
     )]
-    pub reward_mint: InterfaceAccount<'info, Mint>,
-
-    
+    pub reward_mint: Box<InterfaceAccount<'info, Mint>>,
     pub token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>
 }
